@@ -58,8 +58,10 @@ const Profile = () => {
     try {
       await api.put('/users/me', { email, birthDate, avatarUrl });
       setMessage('Cập nhật thành công!');
-    } catch {
-      setMessage('Cập nhật thất bại.');
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.message || err.response?.data;
+      setMessage(typeof msg === 'string' ? msg : 'Cập nhật thất bại.');
     } finally {
       setSaving(false);
     }
