@@ -73,7 +73,7 @@ const SearchResults = () => {
       {loading ? (
         <div style={{ padding: '40px', textAlign: 'center' }}>Đang tìm kiếm...</div>
       ) : stories.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center' }}>Không tìm thấy truyện nào.</div>
+        <div style={{ padding: '40px', textAlign: 'center' }}>Không tìm thấy</div>
       ) : (
         <div className="search-grid">
           {stories.map(story => (

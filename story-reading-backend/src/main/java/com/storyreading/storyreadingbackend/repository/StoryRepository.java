@@ -28,6 +28,14 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
             @Param("status") ApprovalStatus status,
             Pageable pageable);
 
+    @Query("SELECT DISTINCT s FROM Story s JOIN StoryCategory sc ON sc.story = s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%')) AND LOWER(s.author) LIKE LOWER(CONCAT('%', :author, '%')) AND sc.category.categoryId = :categoryId AND s.status = :status")
+    Page<Story> findByTitleAndAuthorAndCategoryIdAndStatus(
+            @Param("keyword") String keyword,
+            @Param("author") String author,
+            @Param("categoryId") Long categoryId,
+            @Param("status") ApprovalStatus status,
+            Pageable pageable);
+
     @Query("SELECT COUNT(s) FROM Story s WHERE s.creator.userId = :creatorId AND s.status = :status")
     long countByCreator_UserIdAndStatus(@Param("creatorId") Long creatorId, @Param("status") ApprovalStatus status);
 
