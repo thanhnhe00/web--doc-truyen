@@ -1,0 +1,130 @@
+.header {
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 0;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+
+.logo-img {
+  max-height: 100%;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.search-bar {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: var(--border-radius-lg); /* very rounded */
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.search-bar:focus-within {
+  border-color: var(--accent-color);
+  background-color: #ffffff;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-btn {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.search-btn:hover {
+  color: var(--accent-color);
+}
+
+.user-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s ease;
+}
+
+.user-info:hover {
+  background-color: var(--bg-primary);
+  color: var(--accent-color);
+}
+
+.logout-btn {
+  padding: 6px 10px !important;
+  color: var(--text-secondary);
+}
+
+.logout-btn:hover {
+  color: #e74c3c;
+}
+
+/* ========== Role Badge ========== */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.role-badge.role-reader {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.role-badge.role-creator {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.role-badge.role-admin {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* ========== Creator Link ========== */
+.creator-link {
+  font-weight: 600;
+  white-space: nowrap;
+}

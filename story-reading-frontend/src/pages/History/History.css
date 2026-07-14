@@ -1,0 +1,8 @@
+.history-page { padding: 24px 0; }
+.history-list { display: flex; flex-direction: column; gap: 12px; }
+.history-item { display: flex; gap: 16px; padding: 12px; align-items: center; transition: border-color 0.2s ease; }
+.history-item:hover { border-color: var(--accent-color); }
+.history-cover { width: 60px; height: 80px; object-fit: cover; border-radius: var(--border-radius-sm); flex-shrink: 0; }
+.history-info { flex: 1; }
+.history-title { font-weight: 600; font-size: 1rem; }
+.history-chapter { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; }

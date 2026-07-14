@@ -1,0 +1,243 @@
+.reading-page {
+  background-color: var(--bg-primary);
+}
+
+.reading-page.reading-dark {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+.reading-top-bar {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 0;
+  margin-bottom: 24px;
+}
+
+.reading-dark .reading-top-bar {
+  background-color: #16213e;
+  border-color: #333;
+}
+
+.reading-top-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.reading-top-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.reading-setting-btn {
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.reading-setting-btn:hover {
+  color: var(--accent-color);
+  background: rgba(247, 148, 29, 0.1);
+}
+
+.reading-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.reading-chapter-title {
+  color: var(--text-secondary);
+}
+
+/* ========== Panel cài đặt đọc ========== */
+.reading-settings-panel {
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+}
+
+.reading-settings-panel.settings-dark {
+  background: #16213e;
+  border-color: #333;
+}
+
+.settings-inner {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-group label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.setting-group input[type="range"] {
+  width: 160px;
+  accent-color: var(--accent-color);
+}
+
+.setting-group .btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+/* ========== Controls ========== */
+.reading-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.reading-content-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.comic-images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.comic-page {
+  width: 100%;
+  max-width: 800px;
+  display: block;
+}
+
+.novel-text {
+  padding: 32px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Dark mode cho novel text */
+.reading-dark .novel-text {
+  background-color: #16213e;
+  color: #e0e0e0;
+  border: 1px solid #333;
+}
+
+/* ========== Chapter modal ========== */
+.chapter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.chapter-modal {
+  width: 100%;
+  max-width: 500px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chapter-modal.modal-dark {
+  background: #1a1a2e;
+  border-color: #333;
+}
+
+.chapter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chapter-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.chapter-modal-close {
+  color: var(--text-muted);
+  padding: 4px;
+}
+
+.chapter-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.chapter-modal-list {
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.chapter-modal-item {
+  display: block;
+  padding: 12px 16px;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.chapter-modal-item:hover {
+  background-color: var(--bg-primary);
+}
+
+.chapter-modal-item.active {
+  background-color: var(--accent-color);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.modal-dark .chapter-modal-item {
+  color: #e0e0e0;
+}
+
+.modal-dark .chapter-modal-item:hover {
+  background-color: #16213e;
+}
+
+@media (max-width: 768px) {
+  .reading-controls {
+    gap: 8px;
+  }
+  .reading-controls .btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  .settings-inner {
+    gap: 16px;
+  }
+  .setting-group input[type="range"] {
+    width: 120px;
+  }
+}

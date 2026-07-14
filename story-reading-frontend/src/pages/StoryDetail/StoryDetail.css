@@ -1,0 +1,148 @@
+.story-detail-page {
+  padding: 24px 0;
+}
+
+.detail-card {
+  padding: 24px;
+}
+
+.detail-header {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.detail-cover-wrapper {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.detail-cover {
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  aspect-ratio: 3/4;
+  object-fit: cover;
+}
+
+.detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.detail-meta li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.detail-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-tag {
+  padding: 4px 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.resume-btn {
+  background-color: #2ecc71;
+  border-color: #2ecc71;
+  color: #fff;
+  animation: pulse 2s infinite;
+}
+
+.resume-btn:hover {
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+}
+
+.report-btn {
+  color: var(--text-muted);
+  border-color: var(--border-color);
+}
+
+.report-btn:hover {
+  color: #e74c3c;
+  border-color: #e74c3c;
+  background-color: #fff5f5;
+}
+
+.detail-description {
+  margin-bottom: 32px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.chapter-link-box {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.chapter-link-box:hover {
+  background-color: var(--bg-primary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .detail-header {
+    flex-direction: column;
+    align-items: center;
+  }
+  .detail-cover-wrapper {
+    width: 200px;
+  }
+  .detail-info {
+    align-items: center;
+    text-align: center;
+  }
+}

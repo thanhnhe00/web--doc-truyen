@@ -1,0 +1,48 @@
+.author-page {
+  padding: 20px 0;
+}
+
+.author-stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.author-story-card {
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.author-story-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.author-story-cover img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+}
+
+.author-story-info {
+  padding: 12px;
+}
+
+.author-story-title {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author-story-meta {
+  font-size: 13px;
+  color: #888;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
