@@ -36,7 +36,11 @@ public class ReadingService {
 
         // FR17: Kiểm tra độ tuổi
         int ageRating = chapter.getStory().getAgeRating() != null ? chapter.getStory().getAgeRating() : 0;
-        if (ageRating > 0 && authentication != null) {
+        if (ageRating > 0) {
+            if (authentication == null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Nội dung này yêu cầu xác minh độ tuổi. Vui lòng đăng nhập.");
+            }
             User ageUser = userRepository.findByUsername(authentication.getName()).orElse(null);
             if (ageUser != null && ageUser.getBirthDate() != null) {
                 int userAge = Period.between(ageUser.getBirthDate(), LocalDate.now()).getYears();
@@ -44,6 +48,9 @@ public class ReadingService {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                             "Nội dung này yêu cầu độ tuổi " + ageRating + " trở lên. Bạn chỉ mới " + userAge + " tuổi.");
                 }
+            } else {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Vui lòng cập nhật ngày sinh để xác minh độ tuổi.");
             }
         }
 

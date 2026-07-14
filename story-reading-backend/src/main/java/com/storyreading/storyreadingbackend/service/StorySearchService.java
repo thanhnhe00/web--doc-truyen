@@ -20,8 +20,8 @@ public class StorySearchService {
         boolean hasAuthor = author != null && !author.isBlank();
 
         if (hasKeyword && hasCategory && hasAuthor) {
-            return storyRepository.findByTitleContainingIgnoreCaseAndCategoryIdAndStatus(
-                    keyword, categoryId, ApprovalStatus.PUBLISHED, pageable);
+            return storyRepository.findByTitleAndAuthorAndCategoryIdAndStatus(
+                    keyword, author, categoryId, ApprovalStatus.PUBLISHED, pageable);
         } else if (hasKeyword && hasAuthor) {
             return storyRepository.findByTitleAndAuthorContainingIgnoreCaseAndStatus(
                     keyword, author, ApprovalStatus.PUBLISHED, pageable);
