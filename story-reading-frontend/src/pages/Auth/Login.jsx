@@ -21,11 +21,19 @@ const Login = () => {
       const res = await api.post('/auth/login', { usernameOrEmail, password });
       if (res.data.token) {
         loginUser(res.data.token, { username: res.data.username, role: res.data.role });
-        navigate('/');
+        const role = res.data.role;
+        if (role === 'CREATOR') {
+          navigate('/creator');
+        } else if (role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       console.error(err);
-      setError('Tên đăng nhập hoặc mật khẩu không đúng.');
+      const msg = err.response?.data?.message || err.response?.data;
+      setError(typeof msg === 'string' ? msg : 'Tài khoản hoặc mật khẩu không chính xác');
     } finally {
       setLoading(false);
     }
