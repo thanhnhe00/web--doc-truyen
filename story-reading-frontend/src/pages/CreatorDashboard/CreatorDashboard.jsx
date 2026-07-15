@@ -147,11 +147,12 @@ const CreatorDashboard = () => {
   };
 
   // ========== Load chapters của story ==========
-  const loadChapters = async (storyId) => {
-    if (storyChapters[storyId]) {
-      setStoryChapters(prev => { const n = { ...prev }; delete n[storyId]; return n; });
+  const loadChapters = async (storyId, forceFetch = false) => {
+    if (expandedStory === storyId && !forceFetch) {
+      setExpandedStory(null);
       return;
     }
+    setExpandedStory(storyId);
     setLoadingChapters(storyId);
     try {
       const res = await api.get(`/stories/${storyId}/chapters`);
@@ -174,7 +175,7 @@ const CreatorDashboard = () => {
       });
       setShowChapterForm(null);
       setNewChapter({ title: '', content: '', chapterNumber: 1, imageUrls: [] });
-      loadChapters(storyId);
+      loadChapters(storyId, true);
     } catch (err) {
       alert('Tạo chương thất bại: ' + (err.response?.data?.message || ''));
     } finally {
@@ -186,7 +187,7 @@ const CreatorDashboard = () => {
   const handleSubmitChapter = async (chapterId, storyId) => {
     try {
       await api.patch(`/stories/${storyId}/chapters/${chapterId}/submit`);
-      loadChapters(storyId);
+      loadChapters(storyId, true);
     } catch { alert('Gửi duyệt chương thất bại!'); }
   };
 
@@ -195,7 +196,7 @@ const CreatorDashboard = () => {
     if (!window.confirm('Xóa chương này?')) return;
     try {
       await api.delete(`/stories/${storyId}/chapters/${chapterId}`);
-      loadChapters(storyId);
+      loadChapters(storyId, true);
     } catch { alert('Xóa chương thất bại!'); }
   };
 
@@ -227,7 +228,7 @@ const CreatorDashboard = () => {
         imageUrls: editChapterForm.imageUrls.filter(u => u && u.trim())
       });
       setEditingChapter(null);
-      loadChapters(storyId);
+      loadChapters(storyId, true);
     } catch (err) {
       alert('Cập nhật chương thất bại: ' + (err.response?.data?.message || ''));
     } finally {
