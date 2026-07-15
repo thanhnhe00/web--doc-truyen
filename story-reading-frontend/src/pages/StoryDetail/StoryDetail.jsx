@@ -162,7 +162,7 @@ const StoryDetail = () => {
               {isAuthenticated && (
                 <button className={`btn ${isFollowing ? 'btn-primary' : 'btn-outline'}`} onClick={handleFollow}>
                   {isFollowing ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
-                  {isFollowing ? 'Đang theo dõi' : 'Theo Dõi'}
+                  {isFollowing ? 'Đang theo dõi' : 'Theo dõi'}
                 </button>
               )}
               {isAuthenticated && (

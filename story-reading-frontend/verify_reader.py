@@ -89,7 +89,7 @@ def run_verification():
         print("10. Reporting a story...")
         page.goto("http://localhost:5173/story/1")
         page.wait_for_timeout(1000)
-        page.get_by_role("button", name="Báo cáo").click()
+        page.get_by_role("button", name="Báo cáo", exact=True).click()
         page.wait_for_timeout(1000)
         # Fill reason
         page.locator(".report-textarea").fill("Nội dung spam và trùng lặp nhiều")
@@ -98,7 +98,7 @@ def run_verification():
         page.screenshot(path="/home/jules/verification/11_report_submitted.png")
 
         # Try to report again
-        page.get_by_role("button", name="Báo cáo").click()
+        page.get_by_role("button", name="Báo cáo", exact=True).click()
         page.wait_for_timeout(1000)
         page.locator(".report-textarea").fill("Nội dung spam")
         page.get_by_role("button", name="Gửi báo cáo").click()
