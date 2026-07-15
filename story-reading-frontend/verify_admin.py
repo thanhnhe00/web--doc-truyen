@@ -51,7 +51,7 @@ def run_verification():
         # Report the comment via page.evaluate
         print(f"Reporting comment #{comment_id} via API...")
         page.evaluate(f"""
-            fetch('/api/reports', {{
+            fetch('http://localhost:8081/api/reports', {{
                 method: 'POST',
                 headers: {{
                     'Content-Type': 'application/json',
