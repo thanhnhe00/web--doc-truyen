@@ -168,6 +168,25 @@ public class CommentService {
     }
 
     /**
+     * FR13 - Lấy chi tiết bình luận theo id.
+     */
+    public CommentResponse getCommentDetails(Long commentId) {
+        Comment c = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bình luận"));
+        return new CommentResponse(
+                c.getCommentId(),
+                c.getContent(),
+                c.getUser().getUsername(),
+                c.getUser().getAvatarUrl(),
+                c.getParent() != null ? c.getParent().getCommentId() : null,
+                Collections.emptyList(),
+                c.getCreatedAt(),
+                c.getCreatedAt(),
+                c.getIsHidden()
+        );
+    }
+
+    /**
      * Đếm số bình luận hiển thị cho 1 chapter.
      */
     public long countVisible(Long chapterId) {

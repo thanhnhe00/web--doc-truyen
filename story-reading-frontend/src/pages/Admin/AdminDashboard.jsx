@@ -24,6 +24,7 @@ const AdminDashboard = () => {
 
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
 
   const [reports, setReports] = useState([]);
   const [loadingReports, setLoadingReports] = useState(false);
@@ -76,10 +77,11 @@ const AdminDashboard = () => {
     finally { setLoadingChapters(false); }
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (searchVal = '') => {
     setLoadingUsers(true);
     try {
-      const res = await api.get('/admin/users');
+      const queryParam = searchVal ? `?search=${encodeURIComponent(searchVal)}` : '';
+      const res = await api.get(`/admin/users${queryParam}`);
       setUsers(res.data || []);
     } catch { setUsers([]); }
     finally { setLoadingUsers(false); }
@@ -89,7 +91,19 @@ const AdminDashboard = () => {
     setLoadingReports(true);
     try {
       const res = await api.get('/admin/reports');
-      setReports(res.data || []);
+      const fetchedReports = res.data || [];
+      setReports(fetchedReports);
+
+      // Fetch comment details for COMMENT reports
+      const commentReports = fetchedReports.filter(r => r.targetType === 'COMMENT');
+      for (const r of commentReports) {
+        try {
+          const detailRes = await api.get(`/admin/comments/${r.targetId}`);
+          setCommentDetails(prev => ({ ...prev, [r.targetId]: detailRes.data }));
+        } catch (e) {
+          console.error("Failed to fetch comment details for id", r.targetId, e);
+        }
+      }
     } catch { setReports([]); }
     finally { setLoadingReports(false); }
   };
@@ -115,7 +129,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (activeTab === 'stories') fetchPendingStories();
     if (activeTab === 'chapters') fetchPendingChapters();
-    if (activeTab === 'users') fetchUsers();
+    if (activeTab === 'users') { setUserSearchQuery(''); fetchUsers(); }
     if (activeTab === 'reports') fetchReports();
     if (activeTab === 'categories') fetchCategories();
     if (activeTab === 'collections') fetchCollections();
@@ -198,6 +212,32 @@ const AdminDashboard = () => {
   };
 
   // ========== Report Actions ==========
+  const [commentDetails, setCommentDetails] = useState({});
+
+  const handleHideReportComment = async (commentId) => {
+    try {
+      await api.patch(`/comments/${commentId}/hide`);
+      setCommentDetails(prev => {
+        if (prev[commentId]) {
+          return { ...prev, [commentId]: { ...prev[commentId], isHidden: true } };
+        }
+        return prev;
+      });
+    } catch { alert('Ẩn bình luận thất bại!'); }
+  };
+
+  const handleUnhideReportComment = async (commentId) => {
+    try {
+      await api.patch(`/comments/${commentId}/unhide`);
+      setCommentDetails(prev => {
+        if (prev[commentId]) {
+          return { ...prev, [commentId]: { ...prev[commentId], isHidden: false } };
+        }
+        return prev;
+      });
+    } catch { alert('Khôi phục bình luận thất bại!'); }
+  };
+
   const handleResolveReport = async (reportId) => {
     try {
       await api.patch(`/admin/reports/${reportId}/resolve`);
@@ -232,7 +272,7 @@ const AdminDashboard = () => {
     try {
       await api.delete(`/categories/${id}`);
       fetchCategories();
-    } catch { alert('Xóa thể loại thất bại!'); }
+    } catch (e) { alert(e.response?.data?.message || 'Xóa thể loại thất bại!'); }
   };
 
   // ========== Collection CRUD ==========
@@ -431,8 +471,27 @@ const AdminDashboard = () => {
       {activeTab === 'users' && (
         <div className="admin-section">
           <h3>Quản lý người dùng</h3>
+          <div className="admin-form-inline" style={{ marginBottom: '16px' }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên hoặc email..."
+              value={userSearchQuery}
+              onChange={e => setUserSearchQuery(e.target.value)}
+              className="admin-input"
+              style={{ width: '300px' }}
+              onKeyDown={e => { if (e.key === 'Enter') fetchUsers(userSearchQuery); }}
+            />
+            <button className="btn btn-primary btn-sm" onClick={() => fetchUsers(userSearchQuery)}>
+              Tìm kiếm
+            </button>
+            {userSearchQuery && (
+              <button className="btn btn-outline btn-sm" onClick={() => { setUserSearchQuery(''); fetchUsers(''); }}>
+                Xóa lọc
+              </button>
+            )}
+          </div>
           {loadingUsers ? <div className="admin-loading">Đang tải...</div>
-            : users.length === 0 ? <div className="admin-empty">Không có người dùng nào.</div>
+            : users.length === 0 ? <div className="admin-empty">Không tìm thấy người dùng phù hợp.</div>
             : (
               <div className="admin-table-wrapper">
                 <table className="admin-table">
@@ -574,6 +633,37 @@ const AdminDashboard = () => {
                       </div>
                       <div className="report-reason">Lý do: {r.reason}</div>
                       <div className="admin-item-meta">{r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : ''}</div>
+
+                      {r.targetType === 'COMMENT' && (
+                        <div className="report-comment-detail" style={{ marginTop: '12px', padding: '10px', background: '#f5f5f5', borderRadius: '4px', borderLeft: '3px solid #ccc' }}>
+                          <strong style={{ color: '#333' }}>Chi tiết bình luận bị báo cáo:</strong>
+                          {commentDetails[r.targetId] ? (
+                            <div style={{ marginTop: '6px' }}>
+                              <p style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#555', fontStyle: 'italic' }}>
+                                "{commentDetails[r.targetId].content}"
+                              </p>
+                              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <span className={`status-chip ${commentDetails[r.targetId].isHidden ? 'locked' : 'active'}`} style={{ fontSize: '0.75rem', padding: '2px 6px' }}>
+                                  {commentDetails[r.targetId].isHidden ? 'Đang ẩn' : 'Đang hiển thị'}
+                                </span>
+                                {commentDetails[r.targetId].isHidden ? (
+                                  <button className="btn btn-outline btn-sm" onClick={() => handleUnhideReportComment(r.targetId)}>
+                                    Khôi phục bình luận
+                                  </button>
+                                ) : (
+                                  <button className="btn btn-outline btn-sm reject-btn" onClick={() => handleHideReportComment(r.targetId)}>
+                                    Ẩn bình luận
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <p style={{ margin: '6px 0 0 0', fontStyle: 'italic', color: '#888' }}>
+                              Không tìm thấy hoặc không có quyền truy cập bình luận này.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="admin-item-actions">
                       <button className="btn btn-primary btn-sm" onClick={() => handleResolveReport(r.reportId)}>

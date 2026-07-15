@@ -147,6 +147,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return userRepository.findAll();
+        }
+        return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(query.trim(), query.trim());
+    }
+
     public Map<String, Object> getCreatorStats(Authentication authentication) {
         User creator = getCurrentUser(authentication);
         Long creatorId = creator.getUserId();

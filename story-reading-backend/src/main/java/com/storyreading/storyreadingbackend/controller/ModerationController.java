@@ -25,9 +25,18 @@ public class ModerationController {
     private final ModerationService moderationService;
     private final ReportService reportService;
     private final UserService userService;
+    private final com.storyreading.storyreadingbackend.service.CommentService commentService;
+
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<com.storyreading.storyreadingbackend.dto.CommentResponse> getCommentDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getCommentDetails(id));
+    }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return ResponseEntity.ok(userService.searchUsers(search));
+        }
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
