@@ -63,15 +63,46 @@ public class ChapterService {
     public List<ChapterSummaryResponse> getPublishedChapters(Long storyId) {
         return chapterRepository.findByStory_StoryIdAndStatusOrderByChapterNumberAsc(storyId, ApprovalStatus.PUBLISHED)
                 .stream()
-                .map(c -> new ChapterSummaryResponse(c.getChapterId(), c.getChapterNumber(), c.getTitle(), c.getCreatedAt()))
+                .map(c -> new ChapterSummaryResponse(c.getChapterId(), c.getChapterNumber(), c.getTitle(), c.getCreatedAt(), c.getStatus() != null ? c.getStatus().name() : null))
                 .collect(Collectors.toList());
     }
+
+    public List<ChapterSummaryResponse> getChaptersForStory(Long storyId, Authentication authentication) {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy truyện"));
+
+        boolean isCreator = false;
+        if (authentication != null && story.getCreator().getUsername().equals(authentication.getName())) {
+            isCreator = true;
+        }
+
+        List<Chapter> chapters;
+        if (isCreator) {
+            chapters = chapterRepository.findByStory_StoryIdOrderByChapterNumberAsc(storyId);
+        } else {
+            chapters = chapterRepository.findByStory_StoryIdAndStatusOrderByChapterNumberAsc(storyId, ApprovalStatus.PUBLISHED);
+        }
+
+        return chapters.stream()
+                .map(c -> new ChapterSummaryResponse(
+                        c.getChapterId(),
+                        c.getChapterNumber(),
+                        c.getTitle(),
+                        c.getCreatedAt(),
+                        c.getStatus() != null ? c.getStatus().name() : null))
+                .collect(Collectors.toList());
+    }
+
     public Chapter submitForApproval(Long chapterId, Authentication authentication) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy chương"));
 
         if (!chapter.getStory().getCreator().getUsername().equals(authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền với chương này");
+        }
+
+        if (chapter.getStatus() != ApprovalStatus.DRAFT && chapter.getStatus() != ApprovalStatus.REJECTED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể gửi duyệt chương ở trạng thái bản nháp hoặc bị từ chối");
         }
 
         chapter.setStatus(ApprovalStatus.PENDING);
@@ -84,6 +115,17 @@ public class ChapterService {
 
         if (!chapter.getStory().getCreator().getUsername().equals(authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền với chương này");
+        }
+
+        if (chapter.getStatus() != ApprovalStatus.DRAFT) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể chỉnh sửa chương ở trạng thái bản nháp");
+        }
+
+        if (request.getChapterNumber() != null && !request.getChapterNumber().equals(chapter.getChapterNumber())) {
+            if (chapterRepository.existsByStory_StoryIdAndChapterNumber(chapter.getStory().getStoryId(), request.getChapterNumber())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Số chương đã tồn tại");
+            }
+            chapter.setChapterNumber(request.getChapterNumber());
         }
 
         chapter.setTitle(request.getTitle());
@@ -111,6 +153,10 @@ public class ChapterService {
 
         if (!chapter.getStory().getCreator().getUsername().equals(authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền với chương này");
+        }
+
+        if (chapter.getStatus() != ApprovalStatus.DRAFT) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể xóa chương ở trạng thái bản nháp");
         }
 
         chapterImageRepository.deleteByChapterId(chapterId);

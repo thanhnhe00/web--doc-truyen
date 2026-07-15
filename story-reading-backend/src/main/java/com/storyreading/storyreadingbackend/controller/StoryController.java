@@ -82,8 +82,8 @@ public class StoryController {
     }
 
     @GetMapping("/{id}/chapters")
-    public ResponseEntity<List<ChapterSummaryResponse>> getChapters(@PathVariable Long id) {
-        return ResponseEntity.ok(chapterService.getPublishedChapters(id));
+    public ResponseEntity<List<ChapterSummaryResponse>> getChapters(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(chapterService.getChaptersForStory(id, authentication));
     }
 
     @GetMapping("/by-author")

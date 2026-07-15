@@ -54,6 +54,7 @@ public class StoryService {
 
         Story saved = storyRepository.save(story);
 
+        List<Category> cats = new java.util.ArrayList<>();
         if (request.getCategoryIds() != null) {
             for (Long catId : request.getCategoryIds()) {
                 Category category = categoryRepository.findById(catId)
@@ -63,8 +64,10 @@ public class StoryService {
                 sc.setStory(saved);
                 sc.setCategory(category);
                 storyCategoryRepository.save(sc);
+                cats.add(category);
             }
         }
+        saved.setCategories(cats);
 
         return saved;
     }
@@ -126,12 +129,25 @@ public class StoryService {
     public List<Story> getMyStories(Authentication authentication) {
         User creator = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được người dùng"));
-        return storyRepository.findByCreator_UserId(creator.getUserId());
+        List<Story> stories = storyRepository.findByCreator_UserId(creator.getUserId());
+        for (Story s : stories) {
+            List<Category> cats = storyCategoryRepository.findByStory_StoryId(s.getStoryId())
+                    .stream()
+                    .map(StoryCategory::getCategory)
+                    .collect(Collectors.toList());
+            s.setCategories(cats);
+        }
+        return stories;
     }
 
     public Story submitForApproval(Long storyId, Authentication authentication) {
         Story story = getOwnedStory(storyId, authentication);
         story.setStatus(ApprovalStatus.PENDING);
+        List<Category> cats = storyCategoryRepository.findByStory_StoryId(storyId)
+                .stream()
+                .map(StoryCategory::getCategory)
+                .collect(Collectors.toList());
+        story.setCategories(cats);
         return storyRepository.save(story);
     }
 
@@ -144,6 +160,7 @@ public class StoryService {
         story.setAgeRating(request.getAgeRating() != null ? request.getAgeRating() : story.getAgeRating());
         story.setContentType(ContentType.valueOf(request.getContentType()));
 
+        List<Category> cats = new java.util.ArrayList<>();
         if (request.getCategoryIds() != null) {
             storyCategoryRepository.deleteByStoryId(storyId);
             for (Long catId : request.getCategoryIds()) {
@@ -153,8 +170,15 @@ public class StoryService {
                 sc.setStory(story);
                 sc.setCategory(category);
                 storyCategoryRepository.save(sc);
+                cats.add(category);
             }
+        } else {
+            cats = storyCategoryRepository.findByStory_StoryId(storyId)
+                    .stream()
+                    .map(StoryCategory::getCategory)
+                    .collect(Collectors.toList());
         }
+        story.setCategories(cats);
 
         return storyRepository.save(story);
     }
@@ -162,6 +186,9 @@ public class StoryService {
     @Transactional
     public void deleteStory(Long storyId, Authentication authentication) {
         Story story = getOwnedStory(storyId, authentication);
+        if (story.getStatus() != ApprovalStatus.DRAFT) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể xóa truyện ở trạng thái bản nháp");
+        }
         chapterImageRepository.deleteByStoryId(storyId);
         commentRepository.deleteByStoryId(storyId);
         viewLogRepository.deleteByStoryId(storyId);
