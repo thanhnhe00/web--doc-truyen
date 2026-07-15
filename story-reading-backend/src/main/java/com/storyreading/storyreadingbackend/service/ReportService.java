@@ -25,13 +25,12 @@ public class ReportService {
 
         ReportTargetType targetType = ReportTargetType.valueOf(request.getTargetType());
 
-        // FR19: Chặn báo cáo trùng lặp khi report trước còn Pending
-        reportRepository.findByReporter_UserIdAndTargetTypeAndTargetIdAndStatus(
-                reporter.getUserId(), targetType, request.getTargetId(), ReportStatus.PENDING)
-                .ifPresent(existing -> {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT,
-                            "Bạn đã báo cáo đối tượng này và đang chờ xử lý");
-                });
+        // FR19: Chặn báo cáo trùng lặp
+        if (reportRepository.existsByReporter_UserIdAndTargetTypeAndTargetId(
+                reporter.getUserId(), targetType, request.getTargetId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bạn đã báo cáo đối tượng này rồi");
+        }
 
         Report report = new Report();
         report.setReporter(reporter);

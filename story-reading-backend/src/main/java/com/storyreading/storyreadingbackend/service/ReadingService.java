@@ -123,6 +123,7 @@ public class ReadingService {
 
         history.setChapter(currentChapter);
         history.setScrollPosition(0);
+        history.setIsPrompted(false);
         historyRepository.save(history);
     }
 }

@@ -93,7 +93,8 @@ public class UserService {
                 h.getChapter().getChapterId(),
                 h.getChapter().getChapterNumber(),
                 h.getChapter().getTitle(),
-                h.getUpdatedAt()
+                h.getUpdatedAt(),
+                h.getIsPrompted()
         );
     }
 

@@ -15,4 +15,5 @@ public class HistoryResponse {
     private Integer chapterNumber;
     private String chapterTitle;
     private LocalDateTime updatedAt;
+    private Boolean isPrompted;
 }
