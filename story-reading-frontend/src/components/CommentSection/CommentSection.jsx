@@ -33,7 +33,9 @@ const CommentSection = ({ chapterId }) => {
     else setLoading(true);
 
     try {
-      const res = await api.get(`/chapters/${chapterId}/comments?page=${pageNum}&size=10`);
+      const isAdmin = user?.role === 'ADMIN';
+      const url = `/chapters/${chapterId}/comments?page=${pageNum}&size=10${isAdmin ? '&showAll=true' : ''}`;
+      const res = await api.get(url);
       const data = res.data.content || res.data;
       if (append) {
         setComments(prev => [...prev, ...data]);
@@ -48,7 +50,7 @@ const CommentSection = ({ chapterId }) => {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [chapterId]);
+  }, [chapterId, user]);
 
   useEffect(() => {
     fetchComments(0, false);
