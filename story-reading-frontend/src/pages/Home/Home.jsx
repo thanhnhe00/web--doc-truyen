@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Clock } from 'lucide-react';
 import Sidebar from '../../components/layout/Sidebar';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import './Home.css';
 
 const Home = () => {
+  const { isAuthenticated } = useAuth();
   const [recommendedStories, setRecommendedStories] = useState([]);
   const [newlyUpdated, setNewlyUpdated] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,11 +15,15 @@ const Home = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const [trendingRes, latestRes] = await Promise.all([
-          api.get('/stories/trending?limit=5'),
+        const recommendationsUrl = isAuthenticated
+          ? '/stories/recommendations?limit=5'
+          : '/stories/trending?limit=5';
+
+        const [recRes, latestRes] = await Promise.all([
+          api.get(recommendationsUrl),
           api.get('/stories/latest?limit=8')
         ]);
-        setRecommendedStories(trendingRes.data || []);
+        setRecommendedStories(recRes.data || []);
         setNewlyUpdated(latestRes.data || []);
       } catch {
         setRecommendedStories([]);
@@ -27,7 +33,7 @@ const Home = () => {
       }
     };
     fetchStories();
-  }, []);
+  }, [isAuthenticated]);
 
   const getStoryId = (s) => s.storyId || s.id;
 

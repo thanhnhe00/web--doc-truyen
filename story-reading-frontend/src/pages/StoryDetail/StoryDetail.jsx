@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { BookOpen, Bookmark, List, Eye, User, BookmarkCheck, Clock, Flag, Star, MessageCircle } from 'lucide-react';
+import { BookOpen, Bookmark, List, Eye, User, BookmarkCheck, Clock, Flag, Star, MessageCircle, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import ReportModal from '../../components/ReportModal/ReportModal';
@@ -16,6 +16,9 @@ const StoryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [resumeHistory, setResumeHistory] = useState(null);
+  const [isDismissed, setIsDismissed] = useState(() => {
+    return sessionStorage.getItem(`dismissed-resume-${id}`) === 'true';
+  });
   const [showReportModal, setShowReportModal] = useState(false);
   const [ratingSummary, setRatingSummary] = useState({ average: 0, count: 0, myScore: null });
   const [commentCount, setCommentCount] = useState(0);
@@ -120,16 +123,35 @@ const StoryDetail = () => {
             </div>
 
             <div className="detail-actions">
-              {resumeHistory ? (
-                <Link
-                  to={`/read/${storyId}/${resumeHistory.chapterId}`}
-                  className="btn btn-primary resume-btn"
-                  onClick={() => {
-                    api.patch(`/users/me/history/${id}/prompted`).catch(() => {});
-                  }}
-                >
-                  <Clock size={18} /> Đọc tiếp - Chương {resumeHistory.chapterNumber}
-                </Link>
+              {resumeHistory && !resumeHistory.isPrompted && !isDismissed ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Link
+                    to={`/read/${storyId}/${resumeHistory.chapterId}`}
+                    className="btn btn-primary resume-btn"
+                    onClick={() => {
+                      sessionStorage.setItem(`dismissed-resume-${id}`, 'true');
+                      api.patch(`/users/me/history/${id}/prompted`).catch(() => {});
+                    }}
+                  >
+                    <Clock size={18} /> Đọc tiếp - Chương {resumeHistory.chapterNumber}
+                  </Link>
+                  <button
+                    className="btn btn-outline"
+                    style={{ padding: '10px 12px', minWidth: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    onClick={async () => {
+                      setIsDismissed(true);
+                      sessionStorage.setItem(`dismissed-resume-${id}`, 'true');
+                      try {
+                        await api.patch(`/users/me/history/${id}/prompted`);
+                      } catch (err) {
+                        console.error(err);
+                      }
+                    }}
+                    title="Bỏ qua"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               ) : firstChapterId ? (
                 <Link to={`/read/${storyId}/${firstChapterId}`} className="btn btn-primary">
                   <BookOpen size={18} /> Đọc Từ Đầu
